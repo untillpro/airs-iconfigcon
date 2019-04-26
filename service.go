@@ -29,13 +29,13 @@ func getService(ctx context.Context) *Service {
 // Start s.e.
 func (s *Service) Start(ctx context.Context) (context.Context, error) {
 	if s.Host == "" {
-		return nil, errors.New("host can't be empty")
+		return ctx, errors.New("host can't be empty")
 	}
 	if s.Port == 0 {
-		return nil, fmt.Errorf("passed port is invalid: %d", s.Port)
+		return ctx, fmt.Errorf("passed port is invalid: %d", s.Port)
 	}
 	if ctx == nil {
-		return nil, errors.New("passed ctx can't be nil, pass context.TODO instead")
+		return ctx, errors.New("passed ctx can't be nil, pass context.TODO instead")
 	}
 	return context.WithValue(ctx, consul, s), nil
 }
