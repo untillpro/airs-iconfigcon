@@ -9,31 +9,38 @@ package iconfigcon
 
 import (
 	"context"
-	gc "github.com/untillpro/gochips"
+	"errors"
+	"fmt"
 )
 
-type service struct {
-	params *Params
+type Service struct {
+	Host string
+	Port uint16
 }
 
 type contextKeyType string
 
-const contextKey = contextKeyType("contextKey")
+const consul = contextKeyType("consul")
 
-// Init s.e.
-func (s *service) Init(ctx context.Context) (context.Context, error) {
-	return ctx, nil
+func getService(ctx context.Context) *Service {
+	return ctx.Value(consul).(*Service)
 }
 
-func (s *service) Start(ctx context.Context) error {
-	return nil
+// Start s.e.
+func (s *Service) Start(ctx context.Context) (context.Context, error) {
+	if s.Host == "" {
+		return nil, errors.New("host can't be empty")
+	}
+	if s.Port == 0 {
+		return nil, fmt.Errorf("passed port is invalid: %d", s.Port)
+	}
+	if ctx == nil {
+		return nil, errors.New("passed ctx can't be nil, pass context.TODO instead")
+	}
+	return context.WithValue(ctx, consul, s), nil
 }
 
 // Stop s.e.
-func (s *service) Stop(ctx context.Context) {
+func (s *Service) Stop(ctx context.Context) {
 
-}
-
-// Finit s.e.
-func (s *service) Finit(ctx context.Context) {
 }

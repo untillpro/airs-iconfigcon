@@ -8,13 +8,14 @@
 package iconfigcon
 
 import (
+	"github.com/untillpro/airs-iconfig"
 	"github.com/untillpro/godif"
 	"github.com/untillpro/godif/iservices"
 )
 
-
 // Declare s.e.
-func Declare(args) {
-	godif.ProvideSliceElement(&iservices.Services, &service{service-args})
-	godif.Provide(&i???.Func, implFunc)
+func Declare(service Service) {
+	godif.ProvideSliceElement(&iservices.Services, &service)
+	godif.Provide(&iconfig.GetConfig, getConfig)
+	godif.Provide(&iconfig.PutConfig, putConfig)
 }

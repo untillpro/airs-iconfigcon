@@ -15,39 +15,45 @@ package iconfigcon
 
 import (
 	"context"
-	"fmt"
-	"testing"
-
-	gc "github.com/untillpro/gochips"
-	"github.com/untillpro/godif"
+	"github.com/stretchr/testify/require"
+	iconfig "github.com/untillpro/airs-iconfig"
 	"github.com/untillpro/godif/iservices"
 	"github.com/untillpro/godif/services"
+	"testing"
+
+	"github.com/untillpro/godif"
 )
 
+var host = "127.0.0.1"
+var port uint16 = 8500
 
-func start(t *testing.T) (context.Context, error) {
+func Test_StartStop(t *testing.T) {
+	ctx := start(t)
+	defer stop(ctx, t)
 
-	// Require iservices interface
+	srv := getService(ctx)
 
-	godif.Require(&iservices.InitAndStart)
-	godif.Require(&iservices.StopAndFinit)
-
-	// Provice iservices interface
-	services.Declare()
-
-	// Declare own service
-	Declare(args)
-
-	errs := godif.ResolveAll()
-	gc.FatalIfError(t, errs, "Resolve problem")
-
-	ctx := context.Background()
-	ctx, err := iservices.InitAndStart(ctx)
-	return ctx, err
-
+	require.Equal(t, host, srv.Host)
+	require.Equal(t, port, srv.Port)
 }
 
-func stop(ctx context.Context, t *testing.T) {
-	iservices.StopAndFinit(ctx)
+func start(t *testing.T) context.Context {
+	services.DeclareRequire()
+	godif.Require(&iconfig.GetConfig)
+	godif.Require(&iconfig.PutConfig)
+
+	// Declare own service
+	Declare(Service{host, port})
+
+	errs := godif.ResolveAll()
+	require.True(t, len(errs) == 0, "Resolve problem", errs)
+
+	ctx, err := iservices.Start(context.Background())
+	require.Nil(t, err)
+	return ctx
+}
+
+func stop(ctx context.Context) {
+	iservices.Stop(ctx)
 	godif.Reset()
 }

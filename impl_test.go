@@ -8,15 +8,13 @@
 package iconfigcon
 
 import (
-	"testing"
-
 	"github.com/untillpro/airs-iconfig"
+	"testing"
 )
 
 func Test_Impl(t *testing.T) {
-	ctx, _ := start(t)
+	ctx := start(t)
 	defer stop(ctx, t)
 
-    iconfig.TestImpl(ctx, t)
-
+	iconfig.TestImpl(ctx, t)
 }
