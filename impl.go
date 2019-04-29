@@ -56,17 +56,15 @@ func getConfig(ctx context.Context, configName string, config interface{}) error
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
 		return fmt.Errorf("%s must be a pointer", reflect.ValueOf(config))
 	}
-	consulConfig := ctx.Value(consul).(*Service)
-	err := consulConfig.getConfigHTTP(config, configName)
+	err := getService(ctx).getConfigHTTP(config, configName)
 	return err
 }
 
 func putConfig(ctx context.Context, configName string, config interface{}) error {
 	if reflect.ValueOf(config).IsNil() {
-		return errors.New("testConfig1 must not be nil")
+		return errors.New("config must not be nil")
 	}
-	consulConfig := ctx.Value(consul).(*Service)
-	err := consulConfig.putConfigHTTP(config, configName)
+	err := getService(ctx).putConfigHTTP(config, configName)
 	return err
 }
 
