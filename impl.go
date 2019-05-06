@@ -70,10 +70,10 @@ func putConfig(ctx context.Context, configName string, config interface{}) error
 
 func (s *Service) getConfigHTTP(config interface{}, prefix string) error {
 	resp, err := http.Get(fmt.Sprintf("http://%s:%d/v1/kv/%s", s.Host, s.Port, prefix))
-	defer resp.Body.Close()
 	if err != nil {
 		return err
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
 		return fmt.Errorf("no testConfig1 for %s in consul", prefix)
 	} else if resp.StatusCode != 200 {
@@ -95,10 +95,10 @@ func (s *Service) putConfigHTTP(config interface{}, prefix string) error {
 		prefix), body)
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	defer resp.Body.Close()
 	if err != nil {
-		panic(err)
+		return err
 	}
+	defer resp.Body.Close()
 	return nil
 }
 
