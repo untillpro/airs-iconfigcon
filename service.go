@@ -20,7 +20,11 @@ type Service struct {
 
 type contextKeyType string
 
-const consul = contextKeyType("consul")
+const (
+	consul            = contextKeyType("consul")
+	DefaultConsulHost = "127.0.0.1"
+	DefaultConsulPort = 8500
+)
 
 func getService(ctx context.Context) *Service {
 	return ctx.Value(consul).(*Service)
