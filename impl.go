@@ -51,13 +51,13 @@ type ConsulEntry struct {
 	Session string
 }
 
-func getConfig(ctx context.Context, configName string, config interface{}) error {
+func getConfig(ctx context.Context, configName string, config interface{}) (ok bool, err error) {
 	rv := reflect.ValueOf(config)
 	if rv.Kind() != reflect.Ptr || rv.IsNil() {
-		return fmt.Errorf("%s must be a pointer", reflect.ValueOf(config))
+		return false, fmt.Errorf("%s must be a pointer", reflect.ValueOf(config))
 	}
-	err := getService(ctx).getConfigHTTP(config, configName)
-	return err
+	ok, err = getService(ctx).getConfigHTTP(config, configName)
+	return ok, err
 }
 
 func putConfig(ctx context.Context, configName string, config interface{}) error {
@@ -68,22 +68,22 @@ func putConfig(ctx context.Context, configName string, config interface{}) error
 	return err
 }
 
-func (s *Service) getConfigHTTP(config interface{}, prefix string) error {
+func (s *Service) getConfigHTTP(config interface{}, prefix string) (ok bool, err error) {
 	resp, err := http.Get(fmt.Sprintf("http://%s:%d/v1/kv/%s", s.Host, s.Port, prefix))
 	if err != nil {
-		return err
+		return false, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 404 {
-		return fmt.Errorf("no testConfig1 for %s in consul", prefix)
+		return false, nil
 	} else if resp.StatusCode != 200 {
-		return fmt.Errorf("unexpected response code: %d", resp.StatusCode)
+		return false, fmt.Errorf("unexpected response code: %d", resp.StatusCode)
 	}
 	err = decodeBody(resp, config)
 	if err != nil {
-		return err
+		return false, err
 	}
-	return nil
+	return true, nil
 }
 
 func (s *Service) putConfigHTTP(config interface{}, prefix string) error {
