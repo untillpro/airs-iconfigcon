@@ -10,12 +10,12 @@ package iconfigcon
 import (
 	"github.com/untillpro/airs-iconfig"
 	"github.com/untillpro/godif"
-	"github.com/untillpro/godif/iservices"
+	"github.com/untillpro/godif/services"
 )
 
 // Declare s.e.
 func Declare(service Service) {
-	godif.ProvideSliceElement(&iservices.Services, &service)
+	godif.ProvideSliceElement(&services.Services, &service)
 	godif.Provide(&iconfig.GetConfig, getConfig)
 	godif.Provide(&iconfig.PutConfig, putConfig)
 }

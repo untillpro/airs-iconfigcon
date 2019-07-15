@@ -17,7 +17,6 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	iconfig "github.com/untillpro/airs-iconfig"
-	"github.com/untillpro/godif/iservices"
 	"github.com/untillpro/godif/services"
 	"testing"
 
@@ -38,22 +37,18 @@ func Test_StartStop(t *testing.T) {
 }
 
 func start(t *testing.T) context.Context {
-	services.DeclareRequire()
 	godif.Require(&iconfig.GetConfig)
 	godif.Require(&iconfig.PutConfig)
 
 	// Declare own service
 	Declare(Service{host, port})
 
-	errs := godif.ResolveAll()
-	require.True(t, len(errs) == 0, "Resolve problem", errs)
-
-	ctx, err := iservices.Start(context.Background())
+	ctx, err := services.ResolveAndStart()
 	require.Nil(t, err)
 	return ctx
 }
 
 func stop(ctx context.Context, t *testing.T) {
-	iservices.Stop(ctx)
+	services.StopServices(ctx)
 	godif.Reset()
 }
